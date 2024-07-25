@@ -20,8 +20,8 @@ std::vector<udim> strides(std::vector<udim> const &shape) {
     // READ: 逆向迭代器 std::vector::rbegin <https://zh.cppreference.com/w/cpp/container/vector/rbegin>
     //       使用逆向迭代器可能可以简化代码
     strides.back() = 1;
-    for (int i = shape.size() - 2; i >= 0; --i) {
-        strides[i] = strides[i + 1] * strides[i + 1];
+    for (int i = strides.size() - 2; i >= 0; --i) {
+        strides[i] = strides[i + 1] * shape[i + 1];
     }
     return strides;
 }
