@@ -33,17 +33,33 @@ struct Tensor4D {
     // 则 `this` 与 `others` 相加时，3 个形状为 `[1, 2, 1, 4]` 的子张量各自与 `others` 对应项相加。
     Tensor4D &operator+=(Tensor4D const &others) {
         // TODO: 实现单向广播的加法
-        if (shape[0] != others.shape[0] && others.shape[0] != 1) return *this;
-        if (shape[1] != others.shape[1] && others.shape[1] != 1) return *this;
-        if (shape[2] != others.shape[2] && others.shape[2] != 1) return *this;
-        if (shape[3] != others.shape[3] && others.shape[3] != 1) return *this;
-
-        unsigned int size = 1;
-        for (int i = 0; i < 4; ++i) {
-            size *= shape[i];
+        // 检查形状兼容性
+        for (int i = 0; i < 4; i++) {
+            if (shape[i] != others.shape[i] && shape[i] != 1 && others.shape[i] != 1) {
+                std::cerr << "Incompatible shapes for addition.\n";
+                return *this;
+            }
         }
-        for (unsigned int i = 0; i < size; ++i) {
-            data[i] += others.data[i / (others.shape[1] * others.shape[2] * others.shape[3])];
+
+        int idx = 0;
+        while (idx < 4 && shape[idx] == others.shape[idx]) idx++;
+
+        int a[4] = {1, shape[3], shape[2] * shape[3], shape[1] * shape[2] * shape[3]};
+        int b[4] = {1, others.shape[3], others.shape[2] * others.shape[3], others.shape[1] * others.shape[2] * others.shape[3]};
+
+        int i2 = 0, j2 = 0, k2 = 0, l2 = 0;
+        for (int i = 0; i < shape[0]; i++) {
+            i2 = (others.shape[0] == 1) ? 0 : i;
+            for (int j = 0; j < shape[1]; j++) {
+                j2 = (others.shape[1] == 1) ? 0 : j;
+                for (int k = 0; k < shape[2]; k++) {
+                    k2 = (others.shape[2] == 1) ? 0 : k;
+                    for (int l = 0; l < shape[3]; l++) {
+                        l2 = (others.shape[3] == 1) ? 0 : l;
+                        data[i * a[3] + j * a[2] + k * a[1] + l] += others.data[i2 * b[3] + j2 * b[2] + k2 * b[1] + l2];
+                    }
+                }
+            }
         }
         return *this;
     }

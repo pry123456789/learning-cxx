@@ -37,14 +37,15 @@ struct Tensor {
 private:
     unsigned int data_index(unsigned int const indices[N]) const {
         unsigned int index = 0;
-        unsigned int stride[N]{1}; // 步长初始化为1
-        for (int i = N - 1; i > 0;--i) {
-            stride[i] = stride[i + 1] * shape[i + 1];
+        unsigned int strides=1; // 步长初始化为1
+        for (int i = N - 1; i >= 0;--i) {
+            strides =strides * shape[i];
         }
         for (unsigned int i = 0; i < N; ++i) {
             ASSERT(indices[i] < shape[i], "Invalid index");
             // TODO: 计算 index
-            index += indices[i] * stride[i];
+            strides = strides/shape[i];
+            index += indices[i] * strides;
         }
         return index;
     }
