@@ -19,7 +19,7 @@ public:
     }
 
     // TODO: 实现移动构造器
-    DynFibonacci(DynFibonacci&& other) noexcept :cache(other.cache), cached(other.cached{
+    DynFibonacci(DynFibonacci&& other) noexcept :cache(other.cache), cached(other.cached){
         other.cache = nullptr;
         other.cached = 0;
     }
@@ -55,6 +55,11 @@ public:
         for (; cached<=i; ++cached) {
             cache[cached] = cache[cached - 1] + cache[cached - 2];
         }
+        return cache[i];
+    }
+
+    // 报错，缺少一个[] const重载函数
+    size_t operator[](int i) const {
         return cache[i];
     }
 
